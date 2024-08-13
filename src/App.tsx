@@ -43,15 +43,19 @@ const defaultValue = { number: 0, prefix: '', row: 0 };
 function App() {
   const [blueTokenFields, setBlueTokenFields] = useState(defaultValue);
   const [redTokenFields, setRedTokenFields] = useState(defaultValue);
+  const [yellowTokenFields, setYellowTokenFields] = useState(defaultValue);
   const [blueToken, setBlueToken] = useState<number[][]>([[]]);
   const [redToken, setRedToken] = useState<number[][]>([[]]);
+  const [yellowToken, setYellowToken] = useState<number[][]>([[]]);
   const [generated, setGenerated] = useState(false); 
 
   const handleGenerateToken = () => {
     const blue = generateVal(blueTokenFields.number, blueTokenFields.row);
     const red = generateVal(redTokenFields.number, redTokenFields.row);
+    const yellow = generateVal(yellowTokenFields.number, yellowTokenFields.row);
     setBlueToken(blue);
     setRedToken(red);
+    setYellowToken(yellow);
     setGenerated(true);
   }
 
@@ -62,6 +66,10 @@ function App() {
 
   const handleRedtoken = (e: React.ChangeEvent<HTMLInputElement>, prop: string) => {
     setRedTokenFields(prev => ({ ...prev, [prop]: e.target.value}))
+  }
+
+  const handleYellowToken = (e: React.ChangeEvent<HTMLInputElement>, prop: string) => {
+    setYellowTokenFields(prev => ({ ...prev, [prop]: e.target.value }));
   }
 
   const handleClearToken = () => {
@@ -91,6 +99,15 @@ function App() {
       </div>
     </div>
 
+    <div>
+      <p className='font-medium text-left uppercase'>Yellow Token Fields</p>
+      <div className='flex gap-2'>
+        <Input value={yellowTokenFields.number} placeholder='Number of yellow tokens' onChange={e => handleYellowToken(e, "number")} />
+        <Input value={yellowTokenFields.prefix} placeholder='Prefix for yellow tokens' onChange={e => handleYellowToken(e, "prefix")} />
+        <Input value={yellowTokenFields.row} placeholder='Yellow tokens per row' onChange={e => handleYellowToken(e, "row")} />
+      </div>
+    </div>
+
     <div className='flex justify-center gap-10'>
       <Button className='w-[300px]' onClick={handleGenerateToken}>Generate Tokens</Button>
       <Button className='w-[300px]' onClick={handleClearToken}>Clear Tokens</Button>
@@ -100,7 +117,7 @@ function App() {
       <TableHeader>
         <TableRow>
           {Array(Number(blueTokenFields.row)).fill(0).map((v, i) => (
-            <TableHead className='text-center'>Token {i+1}</TableHead>
+            <TableHead className='text-center'><p className="bg-sky-500 p-2 rounded ">Token {i+1}</p></TableHead>
           ))}
         </TableRow>
       </TableHeader>
@@ -119,7 +136,7 @@ function App() {
       <TableHeader>
         <TableRow>
           {Array(Number(redTokenFields.row)).fill(0).map((v, i) => (
-            <TableHead className='text-center'>Token {i+1}</TableHead>
+            <TableHead className='text-center'><p className="bg-red-400 p-2 rounded ">Token {i+1}</p></TableHead>
           ))}
         </TableRow>
       </TableHeader>
@@ -133,6 +150,27 @@ function App() {
         ))}
       </TableBody>
     </Table>}
+
+    {generated && <Table>
+      <TableHeader>
+        <TableRow>
+          {Array(Number(yellowTokenFields.row)).fill(0).map((v, i) => (
+            <TableHead className='text-center '><p className="bg-yellow-400 p-2 rounded ">Token {i+1}</p></TableHead>
+          ))}
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {yellowToken?.map((row, r) => (
+        <TableRow key={r}>
+          {row?.map((col, c) => (
+            <TableCell key={c} className="font-medium">{yellowTokenFields.prefix}{col}</TableCell>
+          ))}
+        </TableRow>
+        ))}
+      </TableBody>
+    </Table>}
+
+
    </div>
   )
 }
