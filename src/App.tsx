@@ -48,6 +48,7 @@ function App() {
   const [redToken, setRedToken] = useState<number[][]>([[]]);
   const [yellowToken, setYellowToken] = useState<number[][]>([[]]);
   const [generated, setGenerated] = useState(false); 
+  const [blueTokenFilter, setBlueTokenFilter] = useState('');
 
   const handleGenerateToken = () => {
     const blue = generateVal(blueTokenFields.number, blueTokenFields.row);
@@ -77,6 +78,22 @@ function App() {
     setRedTokenFields(defaultValue);
     setGenerated(false);
   }
+
+  const handleSearch = (e) => {
+    setBlueTokenFilter(e.target.value);
+  }
+
+  const filteredTokens = blueToken.map(tokenRow => {
+    const arr = tokenRow.filter(val => {
+      return val.toString().includes(blueTokenFilter);
+    });
+    console.log(arr);
+    return [...arr];
+  }).reduce((curr, prev) => {
+    return [ ...prev, ...curr]
+  }, [])
+
+  console.log(blueTokenFilter, 'blue', blueToken, filteredTokens)
 
   return (
    <div className='flex flex-col gap-10'>
@@ -113,23 +130,48 @@ function App() {
       <Button className='w-[300px]' onClick={handleClearToken}>Clear Tokens</Button>
     </div>
 
+    <div>
+      <input type='number' placeholder='Search tokens...' value={blueTokenFilter} onChange={handleSearch}  />
+    </div>
+
     {generated && <Table>
-      <TableHeader>
-        <TableRow>
-          {Array(Number(blueTokenFields.row)).fill(0).map((v, i) => (
-            <TableHead className='text-center'><p className="bg-sky-500 p-2 rounded ">Token {i+1}</p></TableHead>
+      {filteredTokens.length ?
+      
+        filteredTokens.map(val => (
+          <>
+            <TableHeader>
+            <TableRow>
+                <TableHead className='text-center'><p className="bg-sky-500 p-2 rounded ">Token {val}</p></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell className="font-medium">{blueTokenFields.prefix}{val}</TableCell>
+            </TableRow>
+          </TableBody>
+          </>
+        ))
+      
+        : 
+        <>
+        <TableHeader>
+          <TableRow>
+            {Array(Number(blueTokenFields.row)).fill(0).map((v, i) => (
+              <TableHead className='text-center'><p className="bg-sky-500 p-2 rounded ">Token {i+1}</p></TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {blueToken?.map((row, r) => (
+          <TableRow key={r}>
+            {row?.map((col, c) => (
+              <TableCell key={c} className="font-medium">{blueTokenFields.prefix}{col}</TableCell>
+            ))}
+          </TableRow>
           ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {blueToken?.map((row, r) => (
-        <TableRow key={r}>
-          {row?.map((col, c) => (
-            <TableCell key={c} className="font-medium">{blueTokenFields.prefix}{col}</TableCell>
-          ))}
-        </TableRow>
-        ))}
-      </TableBody>
+        </TableBody>
+        </>
+      }
     </Table>}
 
     {generated && <Table>
